@@ -216,6 +216,10 @@ Analyze and Export Data:
       WHERE StateName="&StateName" AND Date_Issues IS MISSING;
     RUN;
     TITLE;
+    
+    ODS PDF CLOSE;
+    ODS PROCTITLE;
+    OPTIONS DATE;
 
 
 

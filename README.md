@@ -43,7 +43,7 @@ A user should be able to dynamically input a specific state value and answer the
     1. What are the frequency values for Claim_Type for the selected state?
     2. What are the frequency values for Claim_Site for the selected state?
     3. What are the frequency values for Disposition for the selected state?
-    4.  What is the mean, minimum, maximum, and sum of Close_Amount for the selected state? Round to the nearest integer.
+    4. What is the mean, minimum, maximum, and sum of Close_Amount for the selected state? Round to the nearest integer.
 
 # SAS Program
 Access Data : Importing CSV file Data into SAS

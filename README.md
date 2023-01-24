@@ -1,4 +1,4 @@
-# Case Study - SAS Programming
+# Case Study - Analysis of TSA Claims using SAS Programming
 As a part of SAS Programming Training I have completed this Case Study.
 # Background Information
 You are a SAS programmer with six months of experience who is in charge of creating basic reports and maintaining SAS programs. Recently, you completed a SAS Programming course, and your supervisor has given you your first SAS programming project.

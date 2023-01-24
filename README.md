@@ -68,6 +68,154 @@ Access Data : Importing CSV file Data into SAS
                 REPLACE;
      GUESSINGROWS=MAX;
     RUN;
+    
+Explore Data:
+    
+    /* Observing first 20 rows of data */
+    
+    PROC PRINT DATA=tsa.ClaimsImport (OBS=20);
+    RUN;
+
+    /* Checking variable types, length, format and informats */
+    
+    PROC CONTENTS DATA=tsa.ClaimsImport;
+    RUN;
+    
+    /* Exploring variables mentioned in Data Requirements and determining whether any adjustments needed in data */
+    
+    PROC FREQ DATA=tsa.ClaimsImport;
+     TABLES claim_site claim_type Disposition Date_Received Incident_Date / NOCUM NOPERCENT;
+     FORMAT Date_Received Incident_Date YEAR4.;
+    RUN;
+    
+Prepare Data:
+    
+    /* removing duplicates */
+    
+    PROC SORT DATA=tsa.CLAIMSIMPORT NODUPKEY 
+              OUT=tsa.Claims_NoDups;
+      BY _ALL_;
+    RUN;
+    
+    /* Sorting the data by Incident_Date */
+    
+    PROC SORT DATA=tsa.Claims_NoDups;
+     BY Incident_Date;
+      FORMAT Incident_Date YEAR4.;
+    RUN;
+    
+    /* Preparing Data according to Data Requirements */
+   
+    DATA tsa.Claims_Cleaned;
+     SET tsa.claims_nodups;
+     
+      *Using Conditional Formatting to do adjustments in the data;
+      
+     IF claim_site IN ("-"," ") THEN claim_site="Unknown";
+     
+     IF Disposition IN ("-"," ") THEN Disposition="Unknown";
+     ELSE IF Disposition="Closed: Canceled" THEN Disposition="Closed:Canceled";
+     ELSE IF Disposition="losed: Contractor Claim" THEN Disposition="Closed:Contractor Claim";
+     
+     IF Claim_Type IN ("-"," ") THEN Claim_Type="Unknown";
+     ELSE IF Claim_Type IN ("Passenger Property Loss/Personal Injur","Passenger Property Loss/Personal Injury")
+        THEN Claim_Type="Passenger Property Loss";
+     ELSE IF Claim_Type="Property Damage/Personal Injury" THEN Claim_Type="Property Damage";
+    
+    IF (Incident_Date=. OR Date_Received=. OR 
+    YEAR(Incident_Date) < 2002 OR 
+    YEAR(Incident_Date) > 2017 OR 
+    YEAR(Date_Received) < 2002 OR 
+    YEAR(Date_Received) > 2017 OR
+    Incident_Date > Date_Received)
+    THEN Date_Issues="Needs Review";
+    
+    *Using funtions to assign cases for observation as menioned in Data Requirements;
+     
+     State=UPCASE(State);
+     StateName=PROPCASE(StateName);
+    
+    *Giving Proper Lables;
+    
+    LABEL Airport_Code = "Airport Code"
+          Airport_Name = "Airport Name"
+          Claim_Number = "Claim Number"
+          Claim_Site = "Claim Site"
+          Claim_Type = "Claim Type"
+          Close_Amount = "Close Amount"
+          Date_Issues = "Date Issues"
+          Date_Received = "Date Received"
+          Incident_Date = "Incident Date"
+          Item_Category = "Item Category"
+          StateName = "State Name";
+     
+     *Applying proprer formats to date and amount;
+     
+     FORMAT Incident_Date Date_Received DATE9. Close_Amount DOLLAR20.2;
+     
+     *Dropping county and city column;
+     
+     DROP  County City;
+     
+    RUN;
+    
+Analyze and Export Data:
+    
+    *creating Macro Variable StateName so User can dynamically input specific state value;
+    
+    %LET StateName=California;
+    
+    ODS PDF FILE="&path/output/ClaimsReports.pdf"
+        STYLE=Analysis;
+    
+    OPTIONS NODATE; 
+    ODS NOPROCTITLE;
+    ODS PROCLABEL "Overall Date Issues";
+    
+    *Calculating frequency of overall Date Issues;
+    
+    TITLE "Overall Date Issues";
+    
+    PROC FREQ DATA=tsa.claims_cleaned;
+      TABLES Date_Issues / NOCUM NOPERCENT;
+    RUN;
+    TITLE;
+    
+    *Calculating Overall Claims by Year and Plotting Graph;
+    
+    ODS PROCLABEL "Overall Claims by Year";
+    ODS GRAPHICS ON;
+    
+    TITLE "Overall Claims by Year";
+    
+    PROC FREQ DATA=tsa.claims_cleaned;
+     TABLES Incident_Date / NOCUM NOPERCENT PLOTS=FREQPLOT;
+      FORMAT Incident_Date YEAR4.;
+         WHERE Date_Issues IS MISSING;
+    RUN;
+    TITLE;
+    
+    *Calculating frequency for Claim_Type, Claim_Site and Disposition;
+    
+    ODS PROCLABEL "&StateName Claims Overview";
+    TITLE "&StateName Claim Type, Claim Site & Disposition Frequencies";
+    
+    PROC FREQ DATA=tsa.claims_cleaned;
+      TABLES Claim_Type Claim_Site Disposition / NOCUM NOPERCENT;
+        WHERE StateName="&StateName" AND Date_Issues IS MISSING;
+    RUN;
+    TITLE;
+    
+    *Calculating Statistics for Close_Amount Column;
+    
+    ODS PROCLABEL "&StateName Close Amount Statistics";
+    TITLE "&StateName Close Amount Statistics";
+    
+    PROC MEANS DATA=tsa.Claims_Cleaned MEAN MIN MAX SUM MAXDEC=0;
+     VAR Close_Amount;
+      WHERE StateName="&StateName" AND Date_Issues IS MISSING;
+    RUN;
+    TITLE;
 
 
 

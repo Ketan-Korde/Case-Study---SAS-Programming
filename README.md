@@ -225,8 +225,21 @@ Analyze and Export Data:
 
 1. How many date issues are in the overall data?
     
-       Date Issues: 4241
+      ![App Screenshot](https://github.com/Ketan-Korde/Case-Study---SAS-Programming/blob/a9da932f75beb97304b656616b6591a0b405aebd/Frequency%20of%20Overall%20date%20issue.PNG)
 
+2. How many claims per year of Incident_Date are in the overall data? Include a plot.
+
+![App Screenshot](https://github.com/Ketan-Korde/Case-Study---SAS-Programming/blob/a9da932f75beb97304b656616b6591a0b405aebd/Frequency%20of%20Oveall%20Claims%20per%20year.PNG)
+
+3.  What are the frequency values for Claim_Type, Claim_Site and Disposition for the selected state?
+   
+       Note: Macro variable is created to dynamically input State Name Value here it macro variable contains value "California".
+
+   ![App Screenshot](https://github.com/Ketan-Korde/Case-Study---SAS-Programming/blob/a9da932f75beb97304b656616b6591a0b405aebd/Frequency%20of%20diferent%20variables.PNG)
+   
+4. What is the mean, minimum, maximum, and sum of Close_Amount for the selected state?
+
+![App Screenshot](https://github.com/Ketan-Korde/Case-Study---SAS-Programming/blob/a9da932f75beb97304b656616b6591a0b405aebd/Basic%20Summery%20Statistics.PNG)
 
 
 

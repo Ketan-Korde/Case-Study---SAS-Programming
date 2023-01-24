@@ -220,6 +220,12 @@ Analyze and Export Data:
     ODS PDF CLOSE;
     ODS PROCTITLE;
     OPTIONS DATE;
+    
+# Report Requirement Solution
+
+1. How many date issues are in the overall data?
+    
+       Date Issues: 4241
 
 
 
